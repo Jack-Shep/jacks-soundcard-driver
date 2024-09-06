@@ -8,16 +8,7 @@
 static int __init dante_init(void) {
     printk(KERN_INFO "Dante soundcard driver loaded\n");
     // Add initialization code for Dante soundcards here
-    if (initialize_hardware() != 0) {
-        printk(KERN_ERR "Failed to initialize hardware\n");
-        return -1;
-    }
-    if (register_device() != 0) {
-        printk(KERN_ERR "Failed to register device\n");
-        cleanup_hardware();
-        return -1;
-    }
-    return 0;
+    if (initialize_hjkhghhggjgh
 }
 
 static void __exit dante_exit(void) {
@@ -27,9 +18,38 @@ static void __exit dante_exit(void) {
     cleanup_hardware();
 }
 
+struct hardware {
+    int (*setup)(void);
+    int (*configure)(void);
+    void (*teardown)(void);
+};
+
+static struct hardware dante_hardware = {
+    .setup = hardware_setup,
+    .configure = configure_hardware,
+    .teardown = hardware_teardown,
+};
+
 static int initialize_hardware(void) {
+    int ret;
+
     printk(KERN_INFO "Initializing hardware\n");
-    // Hardware initialization code here
+
+    // Example hardware initialization code
+    ret = dante_hardware.setup();
+    if (ret != 0) {
+        printk(KERN_ERR "Hardware setup failed with error code %d\n", ret);
+        return ret;
+    }
+
+    ret = dante_hardware.configure();
+    if (ret != 0) {
+        printk(KERN_ERR "Hardware configuration failed with error code %d\n", ret);
+        dante_hardware.teardown();
+        return ret;
+    }
+
+    printk(KERN_INFO "Hardware initialized successfully\n");
     return 0;
 }
 
